@@ -1,0 +1,231 @@
+
+<html>
+<head>
+  <title>Ticket Booking Application</title>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+  <div id="root"></div>
+  <script src="app.js"></script>
+</body>
+</html>
+
+css
+
+/* styles.css */
+
+/* Header */
+header {
+  background-color: #f2f2f2;
+  padding: 10px;
+}
+
+/* User registration and Login forms */
+form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #337ab7;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+/* Event browsing */
+.event-card {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.event-card h3 {
+  margin: 0;
+}
+
+.event-card p {
+  margin-top: 5px;
+}
+
+.event-detail {
+  margin: 20px;
+}
+
+.event-detail h2 {
+  margin-top: 0;
+}
+
+.event-detail p {
+  margin-bottom: 10px;
+}
+
+.dashboard {
+  margin: 20px;
+}
+
+.dashboard h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+6:33 PM
+import React, { useState } from 'react';
+const UserRegistration = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+  }
+  return (
+    <form onSubmit={handleFormSubmit}>
+      <h2>User Registration</h2>
+      <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+      <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+      <button type="submit">Register</button>
+    </form>
+  );
+}
+export default UserRegistration;
+Import React, { useState } from 'react';
+const UserLogin = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+  }
+ return (
+    <form onSubmit={handleFormSubmit}>
+      <h2>User Login</h2>
+      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+      <button type="submit">Login</button>
+    </form>
+  );
+}
+export default UserLogin;
+import React from 'react';
+const EventBrowsing = () => {
+  const events = [
+    {
+      id: 1,
+      title: 'Event 1',
+      description: 'Event 1 description',
+      date: '2022-01-01',
+      time: '10:00 AM',
+      venue: 'Venue 1'
+    },
+    {
+      id: 2,
+      title: 'Event 2',
+      description: 'Event 2 description',
+      date: '2022-01-02',
+      time: '11:00 AM',
+      venue: 'Venue 2'
+    },
+  ];
+const handleTicketBooking = (eventId) => {
+  }
+return (
+    <div>
+      <h2>Event Browsing</h2>
+      {events.map(event => (
+        <div key={event.id} className="event-card">
+          <h3>{event.title}</h3>
+          <p>{event.description}</p>
+          <p>Date: {event.date}</p>
+          <p>Time: {event.time}</p>
+          <p>Venue: {event.venue}</p>
+          <button onClick={() => handleTicketBooking(event.id)}>Book Tickets</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+export default EventBrowsing;
+import React from 'react';
+const EventDetail = ({ event }) => {
+  return (
+    <div className="event-detail">
+      <h2>{event.title}</h2>
+      <p>{event.description}</p>
+      <p>Date: {event.date}</p>
+      <p>Time: {event.time}</p>
+      <p>Venue: {event.venue}</p>
+    </div>
+  );
+}
+export default EventDetail;
+6:37 PM
+import React from 'react';
+const UserDashboard = () => {
+  const bookings = [
+    {
+      id: 1,
+      eventId: 1,
+      eventName: 'Event 1',
+      eventDate: '2022-01-01',
+      eventTime: '10:00 AM',
+      eventVenue: 'Venue 1',
+      ticketCount: 2
+    },
+  ];
+return (
+    <div className="dashboard">
+      <h2>User Dashboard</h2>
+      {bookings.map(booking => (
+        <div key={booking.id}>
+          <h3>{booking.eventName}</h3>
+          <p>Date: {booking.eventDate}</p>
+          <p>Time: {booking.eventTime}</p>
+          <p>Venue: {booking.eventVenue}</p>
+          <p>Ticket Count: {booking.ticketCount}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+export default UserDashboard;
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import UserRegistration from './UserRegistration';
+import UserLogin from './UserLogin';
+import EventBrowsing from './EventBrowsing';
+import EventDetail from './EventDetail';
+import UserDashboard from './UserDashboard';
+const App = () => {
+  return (
+    <Router>
+      <Switch>
+        <Route exact path="/" component={UserRegistration} />
+        <Route path="/login" component={UserLogin} />
+        <Route path="/events" component={EventBrowsing} />
+        <Route path="/event/:id" component={EventDetail} />
+        <Route path="/dashboard" component={UserDashboard} />
+      </Switch>
+    </Router>
+  );
+}
+export default App;
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
