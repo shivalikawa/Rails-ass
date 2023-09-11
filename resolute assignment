@@ -1,0 +1,90 @@
+# index.html code
+<html>
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+ <title>Face Detection</title>
+<style>
+h2
+{
+padding-bottom:20px;
+font-weight: 600;
+font-size: 3.2em
+}
+</style>
+  <body>
+    <div class="container"><center><h2>Face Detection</h2></center>
+      <div class="col-lg-offset-2 col-lg-8">
+        <center><form  class="form-inline" action = "/stop" method = "post" enctype="multipart/form-data">          
+          <input type = "submit" class="btn btn-danger btn-md btn-block" value="Stop">
+             </form></center>
+                <center><form  class="form-inline" action = "/start" method = "post" enctype="multipart/form-data">          
+          <input type = "submit" class="btn btn-success btn-md btn-block" value="Start">
+             </form></center><br></div>
+                    <div class="col-lg-offset-2 col-lg-8">
+         <img src="{{ url_for('video_capture') }}" width="100%">
+        </div></div>
+    </body>
+</html>
+
+
+# another html code
+
+<!DOCTYPE html>
+<html>
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+ <title>Dharmaraj - Face Detection</title>
+<style>
+h2
+{
+padding-bottom:20px;
+font-weight: 600;
+font-size: 3.2em
+}
+</style>
+  <body>
+    <div class="container">
+    <center><h2>Face Detection</h2></center>
+            <div class="col-lg-offset-2 col-lg-8">
+                  <center><form  class="form-inline" action = "/stop" method = "post" enctype="multipart/form-data">          
+          <input type = "submit" class="btn btn-danger btn-md btn-block" value="Stop">
+                       </form></center>
+                <center><form  class="form-inline" action = "/start" method = "post" enctype="multipart/form-data">          
+          <input type = "submit" class="btn btn-success btn-md btn-block" value="Start">
+             </form></center><br>                
+            </div></div>
+    </body>
+</html>
+
+# app code with python
+from flask import Flask, render_template, Response
+import cv2
+app=Flask(__name__)
+def capture_by_frames(): 
+    global camera
+    camera = cv2.VideoCapture(0)
+    while True:
+        success, frame = camera.read()  # read the camera frame
+        detector=cv2.CascadeClassifier('Haarcascades/haarcascade_frontalface_default.xml')
+        faces=detector.detectMultiScale(frame,1.2,6)
+         #Draw the rectangle around each face
+        for (x, y, w, h) in faces:
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 3)
+ret, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+@app.route('/')
+def index():
+    return render_template('index.html')
+@app.route('/start',methods=['POST'])
+def start():
+    return render_template('index.html')
+@app.route('/stop',methods=['POST'])
+def stop():
+    if camera.isOpened():
+        camera.release()
+    return render_template('stop.html')
+@app.route('/video_capture')
+def video_capture():
+    return Response(capture_by_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+if __name__=='__main__':
+    app.run(debug=True,use_reloader=False, port=8000)
