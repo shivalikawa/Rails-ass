@@ -1,0 +1,94 @@
+# code for notes is :- 
+
+import React, { useState } from 'react';
+import { v4 as uv4 } from 'uuid';
+const Homepage = () => {
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState({
+    id: '',
+    title: '',
+    description: '',
+    imageLink: “a.jpg",
+    videoLink: “a.mov"
+  });
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setNewNote((prevNote) => ({
+      [name]: value
+    }));
+  };
+  const handleAddNote = () => {
+    const note = {
+      id: uv4()
+    };
+    setNotes([...notes, note]);
+    setNewNote({
+      id: '',
+      title: '',
+      description: '',
+      imageLink: '',
+      videoLink: ''
+    });
+  };
+
+  const handleDeleteNote = (id) => {
+    setNotes(notes.filter((note) => note.id !== id));
+  };
+  return (
+    <div>
+      <h1>Notes</h1>
+      {notes.length === 0 ? (
+        <p>No notes created yet.</p>
+      ) : (
+        notes.map((note) => (
+          <div key={note.id}>
+            <h2>{note.title}</h2>
+            <p>{note.description}</p>
+            {note.videoLink ? (
+              <iframe
+                width="560"
+                height="315"
+                src={note.videoLink}
+                title="Video"
+                frameBorder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            ) : null}
+            {note.imageLink ? <img src={note.imageLink} alt="Image" /> : null}
+            <button onClick={() => handleDeleteNote(note.id)}>Delete</button>
+          </div>
+        ))
+      )}
+      <div>
+        <h2>Create New Note</h2>
+        <input
+          type="text"
+          name="title"
+          value={newNote.title}
+          onChange={handleChange}
+          placeholder="Title"
+        />
+        <input
+          type="text"
+          name="description"
+          value={newNote.description}
+          onChange={handleChange}
+          placeholder="Description"
+        <input>
+          type="text"
+          name="imageLink"
+          value={newNote.imageLink}
+          onChange={handleChange}
+          placeholder="Image Link"
+        <input>
+          type="text"
+          name="videoLink"
+          value={newNote.videoLink}
+          onChange={handleChange}
+          placeholder="Video Link"
+        <button> onClick={handleAddNote}>Create Note</button>
+      </div>
+    </div>
+  );
+
