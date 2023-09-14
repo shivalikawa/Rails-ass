@@ -1,0 +1,53 @@
+import requests
+
+# Login to the dashboard
+response = requests.post("https://facegenie-ams-school.web.app/api/login", json={"username": "testbams@gmail.com", "password": "facegenie"})
+token = response.json()["token"]
+
+# To get the dashboard data
+response = requests.get("https://facegenie-ams-school.web.app/api/dashboard", headers={"Authorization": f"Bearer {token}"})
+dashboard_data = response.json()
+
+# To assert that the dashboard data is correct
+assert dashboard_data["user"]["name"] == "admin"
+assert dashboard_data["students"] is not None
+
+# To filter and sort the student data
+response = requests.get("https://facegenie-ams-school.web.app/api/dashboard/students", headers={"Authorization": f"Bearer {token}"}, params={"filter": "name", "sort": "asc"})
+filtered_student_data = response.json()
+
+
+Function: Add, delete, update, and read students data
+
+
+# Adding a new student record
+new_student_data = {
+    "name": "elif",
+    "grade": 11,
+    "courses": ["Math", "Science", "English"]
+}
+response = requests.post("https://facegenie-ams-school.web.app/api/students", headers={"Authorization": f"Bearer {token}"}, json=new_student_data)
+
+# Asserting that the new student record was added successfully
+assert response.status_code == 201
+
+
+# Deleting the new student record
+response = requests.delete("https://facegenie-ams-school.web.app/api/students/1", headers={"Authorization": f"Bearer {token}"})
+
+
+# Update the new student record
+updated_student_data = {
+    "name": "elsa",
+    "grade": 9,
+    "courses": ["Math", "Science", "English", "History"]
+}
+response = requests.put("https://facegenie-ams-school.web.app/api/students/1", headers={"Authorization": f"Bearer {token}"}, json=updated_student_data)
+
+# Asserting that the new student record was updated successfully
+assert response.status_code == 200
+
+# Retrieving the new student record by ID
+response = requests.get("https://facegenie-ams-school.web.app/api/students/1", headers={"Authorization": f"Bearer {token}"})
+updated_student_data = response.json()
+
