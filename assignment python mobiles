@@ -1,0 +1,90 @@
+ Created a new Django app
+
+cd property_scraper
+python manage.py startapp scraper
+
+
+Configured settings for MongoDB
+Edit `settings.py` file and add the following lines to configure MongoDB as the database:
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.dummy',
+    },
+    'mongodb': {
+        'ENGINE': 'djongo',
+        'NAME': 'property_data',
+    }
+}
+
+# Configure the time zone
+TIME_ZONE = 'Asia/Kolkata'
+
+
+class Property(models.Model):
+    name = models.CharField(max_length=255)
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+    property_type = models.CharField(max_length=255)
+    area = models.DecimalField(max_digits=6, decimal_places=2)
+    link = models.URLField()
+
+    def __str__(self):
+        return self.name
+
+ Created a model for storing property data
+from django.db import models
+class Property(models.Model):
+    name = models.CharField(max_length=200)
+    cost = models.CharField(max_length=100)
+    property_type = models.CharField(max_length=100)
+    area = models.CharField(max_length=100)
+    link = models.CharField(max_length=200)
+
+
+script for scraping property data
+import requests
+from bs4 import BeautifulSoup
+from scraper.models import Property
+def scrape_property_data():
+    url = 'https://www.99acres.com/search/property/buy/hyderabad-all?city=38&preference=S&area_unit=1&res_com=R'
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    properties = soup.find_all('div', class_='srpWrap')
+    for property in properties:
+        name = property.find('a', class_='srpTuple__propertyName').text
+        cost = property.find('span', class_='srpTuple__rupee').text
+        property_type = property.find('span', class_='srpTuple__tupleTableText').text
+        area = property.find('td', class_='semiBold srpTuple__mid').text
+        link = property.find('a', class_='srpTuple__propertyName')['href']
+
+
+Created the property model
+from django.db import models
+class Property(models.Model):
+    name = models.CharField(max_length=255)
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+    property_type = models.CharField(max_length=255)
+    area = models.DecimalField(max_digits=6, decimal_places=2)
+    link = models.URLField()
+
+    def __str__(self):
+        return self.name
+
+        
+ Scheduled the script to run twice daily for specific cities and localities
+CRONJOBS = [
+    ('0 0,12 * * *', 'property_scraper.scraper.management.commands.scrape_properties')
+]
+
+
+Created a management command to execute the scraping script
+from django.core.management.base import BaseCommand
+from scraper.scrape import scrape_properties
+class Command(BaseCommand):
+    help = 'Scrape properties'
+def handle(self, *args, **options):
+        # Define the cities and localities to scrape properties for
+        cities = ['mumbai', 'delhi', 'bangalore']
+        localities = ['thane-west', 'vasant-kunj', 'whitefield']
+for city in cities:
+            for locality in localities:
+                scrape_properties(city, locality)
