@@ -1,0 +1,255 @@
+# Python script for audio:-
+import os
+import librosa
+import numpy as np
+from huggingface_hub import load_dataset
+# Define a function to upload an audio file
+def upload_audio_file():
+  print("Please upload your audio file:")
+  audio_file_path = input()
+# Check if the audio file exists
+  if not os.path.exists(audio_file_path):
+    print("The audio file does not exist.")
+    return None
+# Return the audio file path
+  return audio_file_path
+# Define a function to input a Dataset
+def input_dataset():
+  print("Please select a Dataset from the following options:")
+  print("[0] Common Voice")
+  print("[1] RAVDESS")
+  print("[2] MELD")
+  print("[3] EMOTIC")
+# Get the user's selection
+  dataset_selection = int(input())
+# Load the Dataset
+  if dataset_selection == 0:
+    dataset = load_dataset("common_voice")
+  elif dataset_selection == 1:
+    dataset = load_dataset("ravdess")
+  elif dataset_selection == 2:
+    dataset = load_dataset("meld")
+  elif dataset_selection == 3:
+    dataset = load_dataset("emotic")
+  else:
+    print("Invalid selection.")
+    return None
+ # Return the Dataset
+  return dataset
+  
+# Main function
+def main():
+# Upload the audio file
+  audio_file_path = upload_audio_file()
+
+  # If the audio file is not None, input the Dataset and process the audio
+  if audio_file_path is not None:
+
+    # Input the Dataset
+    dataset = input_dataset()
+
+    # If the Dataset is not None, process the audio
+    if dataset is not None:
+
+      # Load the audio file
+      audio, sample_rate = librosa.load(audio_file_path)
+
+      # Extract the features from the audio
+      features = extract_features(audio, sample_rate)
+
+      # Train the emotion and aggression detection models
+      emotion_detection_model = train_emotion_detection_model(features)
+      aggression_detection_model = train_aggression_detection_model(features)
+
+      # Predict the emotion and aggression of the audio
+      predicted_emotion = emotion_detection_model.predict(features)
+      predicted_aggression = aggression_detection_model.predict(features)
+
+      # Print the results
+      print("Predicted emotion:", predicted_emotion)
+      print("Predicted aggression:", predicted_aggression)
+
+if __name__ == "__main__":
+  main()
+
+
+#library :-
+import librosa
+import numpy as np
+def extract_features(audio, sample_rate):
+ Args:
+    audio: A NumPy array representing the audio signal.
+    sample_rate: The sample rate of the audio signal.
+# Extract MFCCs
+  mfccs = librosa.feature.mfcc(audio, sr=sample_rate)
+
+  # Extract pitch
+  pitch = librosa.core.pitch_tuning(audio, sr=sample_rate)
+
+  # Extract chroma
+  chroma = librosa.feature.chroma_stft(audio, sr=sample_rate)
+
+  # Stack the features together
+  features = np.stack([mfccs, pitch, chroma], axis=1)
+
+  return features
+
+# Load the audio file
+audio, sample_rate = librosa.load("audio.wav")
+
+# Extract the features
+features = extract_features(audio, sample_rate)
+
+# Print the features
+print(features)
+
+from sklearn.linear_model import LogisticRegression
+
+def train_model(features, labels):
+ Args:
+    features: A NumPy array containing the extracted audio features.
+    labels: A NumPy array containing the labels for the audio features.
+
+  Returns:
+    A trained logistic regression model.
+  
+# Create a logistic regression model
+  model = LogisticRegression()
+
+  # Fit the model to the data
+  model.fit(features, labels)
+
+  return model
+
+# Load the features and labels
+features = np.load("features.npy")
+labels = np.load("labels.npy")
+
+# Train the model
+model = train_model(features, labels)
+
+# Save the model
+model.save("model.pkl")
+
+import pickle
+
+def predict_emotion(features, model):
+ Args:
+    features: A NumPy array containing the extracted audio features.
+    model: A trained logistic regression model.
+
+  Returns:
+    The predicted emotion of the input audio.
+  # Load the model
+  model = pickle.load(open("model.pkl", "rb"))
+
+  # Make a prediction
+  prediction = model.predict(features)
+
+  # Return the predicted emotion
+  if prediction == 0:
+    return "happy"
+  else:
+    return "sad"
+
+# Load the features
+features = np.load("features.npy")
+
+# Predict the emotion
+emotion = predict_emotion(features, model)
+
+# Print the predicted emotion
+print("Predicted emotion:", emotion)
+
+import tensorflow as tf
+
+def create_neural_network():
+  def load_neural_network_weights(model):
+ 
+
+  model.load_weights("neural_network_weights.h5")
+
+def predict_aggression(features, model):
+
+  Args:
+    features: A NumPy array containing the extracted audio features.
+    model: A trained neural network model.
+
+  Returns:
+ 
+  # Make a prediction
+  prediction = model.predict(features)
+
+  # Return the predicted aggression
+  return prediction[0]
+
+# Load the neural network model
+model = create_neural_network()
+load_neural_network_weights(model)
+
+# Extract the audio features from the input audio
+features = extract_features(audio, sample_rate)
+
+# Predict the aggression of the input audio
+aggression = predict_aggression(features, model)
+
+# Print the predicted aggression
+print("Predicted aggression:", aggression)
+
+
+
+# Code for printing happy or sad:-
+
+import pandas as pd
+
+def print_table(data, columns):
+  Args:
+   table = pd.DataFrame(data, columns=columns)
+  print(table.to_string())
+
+# Get the predicted emotion and aggression
+predicted_emotion = predict_emotion(features, model)
+predicted_aggression = predict_aggression(features, model)
+
+# Create a table with the predicted emotion
+emotion_table = np.array([
+  ["audio.wav", predicted_emotion]
+])
+
+# Print the emotion table
+print_table(emotion_table, columns=["Audio File Name", "Predicted Emotion"])
+
+# Create a table with the predicted aggression
+aggression_table = np.array([
+  ["audio.wav", predicted_aggression]
+])
+
+# Print the aggression table
+print_table(aggression_table, columns=["Audio File Name", "Predicted Aggression"])
+import matplotlib.pyplot as plt
+def plot_line_chart(data, x_axis, y_axis, title):
+  fig, ax = plt.subplots()
+  ax.plot(x_axis, data)
+
+  # Set the y-axis limits
+  ax.set_ylim([-1, 1])
+
+  # Set the axis labels
+  ax.set_xlabel("Time")
+  ax.set_ylabel(y_axis)
+
+  # Set the title
+  ax.set_title(title)
+
+  # Show the plot
+  plt.show()
+
+# Get the predicted emotion and aggression over time
+predicted_emotion_over_time = [predict_emotion(extract_features(audio, sample_rate)) for i in range(len(audio))]
+predicted_aggression_over_time = [predict_aggression(extract_features(audio, sample_rate)) for i in range(len(audio))]
+
+# Plot the predicted emotion line chart
+plot_line_chart(predicted_emotion_over_time, range(len(audio)), "Predicted Emotion", "Predicted Emotion over Time")
+
+# Plot the predicted aggression line chart
+plot_line_chart(predicted_aggression_over_time, range(len(audio)), "Predicted Aggression", "Predictd Aggression over Time")
