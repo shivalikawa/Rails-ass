@@ -1,0 +1,60 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class ItemService {
+
+    private static List<Item> items = new ArrayList<>();
+
+    public static Item addItem(Item item) {
+        items.add(item);
+        return item;
+    }
+
+    public static Item getItemById(long id) {
+        return items.stream()
+                .filter(item -> item.getId() == id)
+                .findFirst()
+                .orElse(null);
+    }
+}
+public class ItemController {
+
+    @PostMapping("/items")
+    public Item addItem(@RequestBody Item item) {
+        return ItemService.addItem(item);
+    }
+
+    @GetMapping("/items/{id}")
+    public Item getItemById(@PathVariable long id) {
+        return ItemService.getItemById(id);
+    }
+}
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My New Item",
+    "description": "This is my new item."
+  }' \
+  http://localhost:8080/items
+
+JSON
+{
+  "name": "My New Item",
+  "description": "This is my new item."
+}
+The API will respond with a JSON object representing the new item, including the item's ID:
+
+JSON
+{
+  "id": 1,
+  "name": "My New Item",
+  "description": "This is my new item."
+}
+curl -X GET \
+  http://localhost:8080/items/1
+# This will send a GET request to the /items/1 endpoint. The API will respond with a JSON object representing the item with ID 1:
+{
+  "id": 1,
+  "name": "My New Item",
+  "description": "This is my new item."
+}
