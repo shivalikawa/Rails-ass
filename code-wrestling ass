@@ -1,0 +1,118 @@
+# html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Homepage</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Your Company Name</h1>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Services</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+  <main>
+    <section id="hero">
+      <img src="hero-image.jpg" alt="Hero image">
+      <h1>Visually appealing headline</h1>
+      <p>Visually appealing paragraph</p>
+      <a href="#get-more-information" class="btn btn-primary">Get More Information</a>
+    </section>
+    <section id="services">
+      <h2>Services</h2>
+      <ul>
+        <li>Service 1</li>
+        <li>Service 2</li>
+        <li>Service 3</li>
+      </ul>
+    </section>
+    <section id="about">
+      <h2>About</h2>
+      <p>About your company</p>
+    </section>
+    <section id="get-more-information">
+      <h2>Get More Information</h2>
+      <form action="/register" method="post">
+        <input type="text" name="name" placeholder="Name">
+        <input type="tel" name="phone" placeholder="Phone Number">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </section>
+  </main>
+  <footer>
+    <p>Copyright &copy; 2023 Your Company Name</p>
+  </footer>
+</body>
+</html>
+
+
+#php 
+
+<?php
+
+// Get the user's name and phone number
+$name = $_POST['name'];
+$phone = $_POST['phone'];
+
+// Create a new user account
+$user = new User($name, $phone);
+$user->save();
+
+// Redirect the user to their dashboard
+header('Location: dashboard.php');
+
+?>
+<?php
+
+// Get the logged-in user
+$user = User::getLoggedInUser();
+
+// Display the user's learning metrics and progress tracking
+echo '<h2>Learning Metrics</h2>';
+echo '<ul>';
+echo '<li>Total courses completed: ' . $user->getCoursesCompleted() . '</li>';
+echo '<li>Total hours spent learning: ' . $user->getHoursSpentLearning() . '</li>';
+echo '</ul>';
+
+// Display the user's personalized account information and service details
+echo '<h2>Account Information</h2>';
+echo '<ul>';
+echo '<li>Name: ' . $user->getName() . '</li>';
+echo '<li>Phone Number: ' . $user->getPhone() . '</li>';
+echo '</ul>';
+
+?>
+
+# css
+
+body {
+  font-family: sans-serif;
+  font-size: 16px;
+}
+
+header {
+  text-align: center;
+}
+
+nav {
+  display: flex;
+  justify-content: space-around;
+}
+
+main {
+  margin-top: 20px;
+}
+
+section {
+  padding: 20px;
+}
+
+h1 {
+  font-size: 
